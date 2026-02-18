@@ -63,6 +63,22 @@ def generate_launch_description():
         output='screen',
     )
 
+    # --- Fake GNSS (ground-truth position → UTM) ---
+    fake_gnss = Node(
+        package='bme_simplerover_gazebo',
+        executable='fake_gnss_node.py',
+        name='fake_gnss_node',
+        parameters=[{
+            'use_sim_time': use_sim_time,
+            'origin_latitude': 35.0,
+            'origin_longitude': 139.0,
+            'origin_utm_easting': 500000.0,
+            'origin_utm_northing': 3873000.0,
+            'origin_height': 0.0,
+        }],
+        output='screen',
+    )
+
     # --- ros_gz_bridge ---
     bridge = Node(
         package='ros_gz_bridge',
@@ -84,4 +100,5 @@ def generate_launch_description():
         robot_state_publisher,
         spawn_robot,
         bridge,
+        fake_gnss,
     ])
