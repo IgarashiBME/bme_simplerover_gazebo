@@ -24,6 +24,9 @@
   <material name="dark_grey">
     <color rgba="0.3 0.3 0.3 1.0"/>
   </material>
+  <material name="red">
+    <color rgba="0.9 0.1 0.1 1.0"/>
+  </material>
 
   <!-- ==================== Inertia Macros ==================== -->
   <xacro:macro name="box_inertia" params="m x y z">
@@ -86,6 +89,21 @@
     <xacro:box_inertia m="${body_mass}" x="${body_length}" y="${body_width}" z="${body_height}"/>
   </link>
 
+  <!-- Front marker (visual only, no collision/inertia) -->
+  <link name="front_marker_link">
+    <visual>
+      <geometry>
+        <box size="0.04 ${body_width} ${body_height}"/>
+      </geometry>
+      <material name="red"/>
+    </visual>
+  </link>
+  <joint name="front_marker_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="front_marker_link"/>
+    <origin xyz="${body_length / 2 - 0.02} 0 0.05" rpy="0 0 0"/>
+  </joint>
+
   <!-- base_footprint (on the ground) -->
   <link name="base_footprint"/>
   <joint name="base_footprint_joint" type="fixed">
@@ -122,28 +140,40 @@
       <odom_publish_frequency>30</odom_publish_frequency>
     </plugin>
 
+    <plugin filename="gz-sim-odometry-publisher-system"
+            name="gz::sim::systems::OdometryPublisher">
+      <odom_frame>odom</odom_frame>
+      <robot_base_frame>base_footprint</robot_base_frame>
+      <odom_topic>ground_truth_odom</odom_topic>
+      <odom_publish_frequency>30</odom_publish_frequency>
+    </plugin>
+
     <plugin filename="gz-sim-joint-state-publisher-system"
             name="gz::sim::systems::JointStatePublisher">
       <topic>joint_states</topic>
     </plugin>
   </gazebo>
 
-  <!-- Wheel friction -->
+  <!-- Wheel friction (fdir1: rolling direction in link frame) -->
   <gazebo reference="front_left_wheel_link">
     <mu1>1.0</mu1>
-    <mu2>0.5</mu2>
+    <mu2>0.15</mu2>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
   <gazebo reference="front_right_wheel_link">
     <mu1>1.0</mu1>
-    <mu2>0.5</mu2>
+    <mu2>0.15</mu2>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
   <gazebo reference="rear_left_wheel_link">
     <mu1>1.0</mu1>
-    <mu2>0.5</mu2>
+    <mu2>0.15</mu2>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
   <gazebo reference="rear_right_wheel_link">
     <mu1>1.0</mu1>
-    <mu2>0.5</mu2>
+    <mu2>0.15</mu2>
+    <fdir1>1 0 0</fdir1>
   </gazebo>
 
 </robot>
